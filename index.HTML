@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sustainability Labs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 90%;
+            margin: auto;
+            padding-top: 20px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .header img {
+            max-width: 94px;
+            padding-left: 15px;
+        }
+        .header h3 {
+            margin-left: 15px;
+            font-size: 1.5em;
+            color: #000000;
+        }
+        .content {
+            display: flex;
+        }
+        .stock-selection-container {
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            width: 46%;
+        }
+        .stock-selection {
+            width: 100%;
+        }
+        .side-box-buttons {
+            width: 18%;
+            margin-left: 20px;
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        .side-box {
+            width: 50%;
+            margin-left: 20px;
+            background-color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            height: auto;
+        }
+        .stocks-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.3cm;
+        }
+        .stock-box {
+            background-color: #ffffff;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            height: 170px; /* Increased height to accommodate more text */
+            transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .stock-box:hover {
+            transform: scale(1.05);
+        }
+        .stock-box.selected {
+            border: 0px solid #0056b3;
+            background-color: #e0f7fa;
+            box-shadow: 0 0 1px #007bff, 0 0 2px #007bff, 0 0 2px #007bff;
+        }
+        .stock-box.gold-glow {
+            box-shadow: 0 0 5px 2px #28c249;
+        }
+        .stock-box img {
+            width: 100%;
+            border-radius: 5px;
+            height: 50%; /* Adjusted height to allow space for text */
+        }
+        .stock-details {
+            text-align: left;
+            margin-top: 10px;
+            font-size: 0.9em; /* Reduced font size to fit more text */
+        }
+        .stock-details h3 {
+            margin: 0;
+            font-size: 1.1em;
+        }
+        .stock-details p {
+            margin: 5px 0;
+            color: black;
+            line-height: 1.2em; /* Adjusted line height */
+        }
+        .buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .buttons button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        .buttons button.reset {
+            background-color: #007bff;
+            color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .buttons button.reset:hover {
+            background-color: #0056b3;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .buttons button.fast-forward {
+            background-color: #6c757d;
+            color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .buttons button.fast-forward:hover {
+            background-color: #5a6268;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .buttons button.reveal {
+            background-color: #28a745;
+            color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .buttons button.reveal:hover {
+            background-color: #218838;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .icon {
+            width: 90px;
+            height: 90px;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            border-radius: 5px;
+        }
+        .overlay img {
+            width: 100%;
+            border-radius: 5px;
+        }
+        .statement-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .statement {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            font-size: 1.2em;
+            flex-grow: 1;
+        }
+        .statement-leader {
+            background-color: #d5f5d3;
+        }
+        .positive {
+            color: #5a6268;
+        }
+        .negative {
+            color: red;
+        }
+        .chart-container {
+            margin-top: 20px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://www.ocbc.com/iwov-resources/sg/ocbc/gbc/img/about-us/our-brand/logo_ocbcbank-horizontal.png" alt="OCBC Logo">
+            <h3>Sustainability Labs</h3>
+        </div>
+        <p>It is 2019 TODAY. Pick 4 stocks to travel in time and see how your portfolio would have fared!</p>
+        <div class="content">
+            <div class="stock-selection-container">
+                <div class="stock-selection">
+                    <div class="stocks-grid" id="stocks-grid">
+                        <!-- Stock boxes will be dynamically populated here -->
+                    </div>
+                </div>
+            </div>
+            <div class="side-box-buttons" id="button-column">
+                <div class="buttons">
+                    <button class="reset" onclick="resetPage()">Reset</button>
+                    <button class="fast-forward" onclick="fastForward()">Fast forward 5 years >></button>
+                    <button class="reveal" onclick="revealRealNames()">Reveal</button>
+                </div>
+                <div class="overlay" id="loading-overlay" style="display: none;">
+                    <img src="https://miro.medium.com/v2/resize:fit:1280/1*9nEwkQ_j3n6N4olSUFT-Rw.gif" alt="Loading...">
+                </div>
+            </div>
+            <div class="side-box" id="portfolio-value">
+
+                <!-- This box is intentionally left blank to match the design -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/1-FyotIUSGGdKTDqso7ib8WGYU2eVzIxQfniBaS7y0Lk/export?format=csv&gid=0';
+
+        let stocksData = []; // To store the stock data including real names and forward returns
+
+        function loadStocks() {
+            Papa.parse(sheetUrl, {
+                download: true,
+                header: true,
+                complete: function(results) {
+                    stocksData = results.data; // Store the data for later use
+                    const stocksGrid = document.getElementById('stocks-grid');
+                    stocksGrid.innerHTML = ''; // Clear the grid
+
+                    stocksData.forEach(stock => {
+                        const stockBox = document.createElement('div');
+                        stockBox.className = 'stock-box';
+                        stockBox.onclick = () => toggleSelection(stockBox);
+                        stockBox.setAttribute('data-esg', stock.ESG);
+                        stockBox.setAttribute('data-real-name', stock.RealName); // Store the real name
+                        stockBox.setAttribute('data-forward-return', stock.ForwardReturn); // Store the forward return
+
+                        stockBox.innerHTML = `
+                            <img src="${stock.ImageURL}" alt="Stock Image">
+                            <div class="stock-details">
+                                <h3>${stock.Name}</h3>
+                                <p class="return">Hist 1Y Ret: ${stock.Return}%</p> <!-- Renamed to Hist 1Y Ret -->
+                                <p class="esg">ESG: ${stock.ESG}</p>
+                            </div>
+                        `;
+
+                        stocksGrid.appendChild(stockBox);
+                    });
+                }
+            });
+        }
+
+        function toggleSelection(element) {
+            const selectedBoxes = document.querySelectorAll('.stock-box.selected');
+            if (element.classList.contains('selected')) {
+                element.classList.remove('selected');
+            } else if (selectedBoxes.length < 4) {
+                element.classList.add('selected');
+            } else {
+                alert('You can only select up to 4 stocks.');
+            }
+        }
+
+        function fastForward() {
+            const selectedBoxes = document.querySelectorAll('.stock-box.selected');
+
+            // Parse and filter for "Highest" indicator in column L
+            const topStocks = stocksData.filter(stock => stock.Highest.trim().toLowerCase() === "highest");
+
+            if (selectedBoxes.length === 4) {
+                if (topStocks.length < 4) {
+                    alert('Not enough stocks marked as "Highest" to perform this comparison. Please ensure there are at least 4 stocks.');
+                    return;
+                }
+
+                const buttonColumn = document.getElementById('button-column');
+                const loadingOverlay = document.getElementById('loading-overlay');
+                buttonColumn.style.backgroundColor = 'black';
+                loadingOverlay.style.display = 'flex';
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                    buttonColumn.style.backgroundColor = '';
+
+                    let totalValue = 0;
+                    let totalValueTop = 0;
+                    const initialInvestment = 2500; // Assuming each stock gets an equal investment of $2500
+
+                    selectedBoxes.forEach(box => {
+                        const forwardReturn = parseFloat(box.getAttribute('data-forward-return')) / 100;
+                        totalValue += initialInvestment * (1 + forwardReturn);
+                    });
+
+                    topStocks.slice(0, 4).forEach(stock => { // Use only the top 4 stocks
+                        const forwardReturnTop = parseFloat(stock.ForwardReturn) / 100;
+                        totalValueTop += initialInvestment * (1 + forwardReturnTop);
+                    });
+
+                    const statementClass = totalValue >= 10000 ? 'positive' : 'negative';
+                    const topStatementClass = totalValueTop >= 10000 ? 'positive' : 'negative';
+
+                    document.getElementById('portfolio-value').innerHTML = `
+                        <div class="statement-container">
+                            <img src="https://i.imgur.com/vS8qeaZ.jpeg" alt="icon" class="icon">
+                            <div class="statement ${statementClass}" style="background-color: #f0f0f0;">
+                                $${totalValue.toLocaleString()} - Your portfolio value based on stock selections
+                            </div>
+                        </div>
+                        <div class="statement-container">
+                            <img src="https://i.imgur.com/Q9spnPI.jpeg" alt="icon" class="icon">
+                            <div class="statement ${topStatementClass}" style="background-color: #d5f5d3;">
+                                $${totalValueTop.toLocaleString()} - Portfolio growth if invested in top-rated stocks
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="portfolioChart"></canvas>
+                        </div>
+                    `;
+                    renderChart(totalValue, totalValueTop);
+                }, 4000);
+            } else {
+                alert('Please select exactly 4 stocks.');
+            }
+        }
+
+        function highlightTopStocks(topStocks) {
+            const stockBoxes = document.querySelectorAll('.stock-box');
+            stockBoxes.forEach(box => {
+                const realName = box.getAttribute('data-real-name');
+                if (topStocks.some(stock => stock.RealName === realName)) {
+                    box.classList.add('gold-glow'); // Add gold glow to top-rated stocks
+                }
+            });
+        }
+
+        function resetPage() {
+            const selectedBoxes = document.querySelectorAll('.stock-box.selected');
+            selectedBoxes.forEach(box => box.classList.remove('selected'));
+            document.getElementById('portfolio-value').innerText = '';
+
+            // Reset stock names to initial values and clear ESG ratings
+            const stockBoxes = document.querySelectorAll('.stock-box');
+            stockBoxes.forEach(box => {
+                const originalName = stocksData[Array.from(stockBoxes).indexOf(box)].Name;
+                const h3 = box.querySelector('h3');
+                h3.textContent = originalName; // Reset to original name
+                const esg = box.querySelector('.esg');
+                esg.textContent = `ESG: ${stocksData[Array.from(stockBoxes).indexOf(box)].ESG}`; // Reset the ESG rating
+                box.classList.remove('gold-glow'); // Remove gold glow
+                box.querySelector('.forward-return')?.remove(); // Remove the forward return line
+            });
+
+            shuffleStocks();
+        }
+
+        function shuffleStocks() {
+            const grid = document.getElementById('stocks-grid');
+            const boxes = Array.from(grid.children);
+            boxes.sort(() => Math.random() - 0.5);
+            boxes.forEach(box => grid.removeChild(box));
+            boxes.forEach((box, index) => {
+                setTimeout(() => {
+                    grid.appendChild(box);
+                }, index * 100);
+            });
+            anime({
+                targets: '.stock-box',
+                translateX: () => anime.random(-10, 10),
+                translateY: () => anime.random(-10, 10),
+                duration: 1000,
+                easing: 'easeInOutQuad',
+                complete: () => {
+                    anime({
+                        targets: '.stock-box',
+                        translateX: 0,
+                        translateY: 0,
+                        duration: 1000,
+                        easing: 'easeInOutQuad',
+                    });
+                }
+            });
+        }
+
+        function renderChart(value1, value2) {
+            const ctx = document.getElementById('portfolioChart').getContext('2d');
+            const data = {
+                labels: ['Aug 2019', 'Aug 2024'],
+                datasets: [
+                    {
+                        label: 'Your Selection',
+                        data: [10000, value1],
+                        borderColor: 'blue',
+                        borderWidth: 2,
+                        tension: 0.4, // Smooth the line
+                    },
+                    {
+                        label: 'Top-Rated Selection',
+                        data: [10000, value2],
+                        borderColor: 'green',
+                        borderWidth: 2,
+                        tension: 0.4, // Smooth the line
+                    }
+                ]
+            };
+            const options = {
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `$${context.raw.toLocaleString()}`;
+                            }
+                        }
+                    }
+                }
+            };
+            new Chart(ctx, {
+                type: 'line',
+                data: data,
+                options: options
+            });
+        }
+
+        function revealRealNames() {
+            const stockBoxes = document.querySelectorAll('.stock-box');
+            const topStocks = stocksData.filter(stock => stock.Highest.trim().toLowerCase() === "highest");
+
+            stockBoxes.forEach(box => {
+                const realName = box.getAttribute('data-real-name');
+                const h3 = box.querySelector('h3');
+                h3.textContent = realName; // Update the company name to the real name
+
+                const forwardReturn = box.getAttribute('data-forward-return');
+                const forwardReturnLine = document.createElement('p');
+                forwardReturnLine.className = 'forward-return';
+                forwardReturnLine.textContent = `Forward return: ${forwardReturn}%`;
+                box.querySelector('.stock-details').appendChild(forwardReturnLine);
+
+                // Highlight top-rated stocks with a gold glow
+                if (topStocks.some(stock => stock.RealName === realName)) {
+                    box.classList.add('gold-glow');
+                }
+            });
+        }
+
+        // Load stocks from Google Sheets on page load
+        window.onload = loadStocks;
+    </script>
+</body>
+</html>
